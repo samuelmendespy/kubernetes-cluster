@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-typescript-app
+  labels:
+    app: node-typescript-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: node-typescript-app
+  template:
+    metadata:
+      labels:
+        app: node-typescript-app
+    spec:
+      containers:
+      - name: node-typescript-app
+        image: your-docker-image:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: ELASTICSEARCH_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: elasticsearch_host
+        - name: CACHE_EXPIRY
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: cache_expiry
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
