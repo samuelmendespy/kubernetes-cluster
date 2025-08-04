@@ -1,0 +1,13 @@
+node_modules/
+node_modules
+dist
+__tests__
+npm-debug.log
+.git/
+.git
+.gitignore
+.env
+dist
+*.swp
+*.log
+tmp/
