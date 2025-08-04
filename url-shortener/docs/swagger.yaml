@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: URL Shortener API
+  version: 1.0.0
+  description: API documentation for the URL Shortener service.
+servers:
+  - url: http://localhost:3000
+    description: Local Development Server
+tags:
+  - name: URL Shortener
+    description: Operations to URL shortening and redirection.
+paths:
+  /generate:
+    post:
+      summary: Generate a short URL
+      tags:
+        - URL Shortener
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                longUrl:
+                  type: string
+                  format: url
+                  description: The original long URL to be shortened.
+                  example: https://www.github.com
+              required:
+                - longUrl
+      responses:
+        '201':
+          description: URL shortened successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: URL shortened successfully
+                  shortUrl:
+                    type: string
+                    format: url
+                    example: http://localhost:3000/abcdEFg
+        '200':
+          description: URL already shortened (if longUrl already exists)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: URL already shortened
+                  shortUrl:
+                    type: string
+                    format: url
+                    example: http://localhost:3000/abcdEFg
+        '400':
+          description: Invalid request (missing longUrl or invalid URL format)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: longUrl is required
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal server error
+  /{shortCode}:
+    get:
+      summary: Redirect to original URL and track clicks
+      tags:
+        - URL Shortener
+      parameters:
+        - in: path
+          name: shortCode
+          schema:
+            type: string
+            description: The short code generated for the URL.
+            example: abcdEFg
+          required: true
+      responses:
+        '302':
+          description: Redirects to the original long URL.
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+                example: https://www.github.com
+        '404':
+          description: Short URL not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Short URL not found
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal server error
